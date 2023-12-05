@@ -21,14 +21,14 @@ abstract class AWorld extends World {
 
 class StartingWorld extends AWorld {
   Random rand;
-
+  StartingWorld(int bombCount) {this(bombCount, new Random());}
   StartingWorld(int bombCount, Random rand) {
     super(bombCount);
     this.rand = rand;
   }
   public World onMouseClicked (Posn pos, String buttonname) {
     if (buttonname.equals("LeftButton")) {
-      return new StartingWorld(bombCount, new Random());
+      return new GameWorld(bombCount);
     } else {
       return this;
     }
@@ -38,9 +38,34 @@ class StartingWorld extends AWorld {
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
     IGamePieces text = new StartingText("Click Start", 50);
-    IGamePieces bombText = new StartingText("Bullets: " + this.bombCount, 25);
+    IGamePieces bombText = new StartingText("Bombs: " + this.bombCount, 25);
     WorldScene scene1 = scene.placeImageXY(text.draw(), 250, 150);
     return scene1.placeImageXY(bombText.draw(), 70,280);
+  }
+}
+
+class GameWorld extends AWorld {
+  Random rand;
+  GameWorld(int bombCount) {
+    this(bombCount, new Random());
+  }
+  GameWorld(int bombCount, Random rand) {
+    super(bombCount);
+    this.rand = rand;
+  }
+  @Override
+  public WorldScene makeScene() {
+    WorldScene scene = getEmptyScene();
+    IGamePieces text = new StartingText("GAME", 50);
+    IGamePieces mine = new Mine();
+    IGamePieces cell = new Cell();
+    IGamePieces flag = new Flag();
+    IGamePieces number = new Numbers(3);
+    WorldScene scene1 = scene.placeImageXY(mine.draw(), 50, 50);
+    WorldScene scene2 = scene1.placeImageXY(cell.draw(), 300, 100);
+    WorldScene scene3 = scene2.placeImageXY(flag.draw(), 100, 100);
+    WorldScene scene4 = scene3.placeImageXY(number.draw(), 270, 200);
+    return scene4.placeImageXY(text.draw(), 250, 150);
   }
 }
 
