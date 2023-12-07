@@ -30,9 +30,19 @@ class Mine implements IGamePieces {
   }
 }
 
-class Cell implements IGamePieces {
+class Cell {
+  ArrayList<Cell> neighbors;
+  boolean hasBomb;
+  int height;
+  int width;
+  Cell(int height, int width){
+    this.neighbors = new ArrayList<>();
+    this.hasBomb = false;
+    this.height = height;
+    this.width = width;
+  }
   public WorldImage draw() {
-    return new RectangleImage(10, 10, OutlineMode.SOLID, Color.cyan);
+    return new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
   }
 }
 
