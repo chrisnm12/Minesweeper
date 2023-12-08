@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javalib.funworld.World;
 import javalib.funworld.WorldScene;
@@ -70,7 +71,26 @@ class GameWorld extends AWorld {
       this.board.add(row);
     }
     neighboringCells();
+    placeMines();
   }
+  public void placeMines() {
+    ArrayList<Integer> placedMines = new ArrayList<>();
+    int totalCells = rows * columns;
+
+    while (placedMines.size() < this.bombCount) {
+      int randomCell = rand.nextInt(totalCells);
+
+      if (!placedMines.contains(randomCell)) {
+        placedMines.add(randomCell);
+        int row = randomCell / columns;
+        int col = randomCell % columns;
+
+        Cell cell = this.board.get(row).get(col);
+        cell.hasBomb = true;
+      }
+    }
+  }
+
   public void neighboringCells() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
@@ -201,6 +221,31 @@ class ExamplesMinesweeper {
                 t.checkExpect(cell.neighbors.contains(expectedNeighbor6), true) &&
                   t.checkExpect(cell.neighbors.contains(expectedNeighbor7), true) &&
                     t.checkExpect(cell.neighbors.contains(expectedNeighbor8), true);
+  }
+
+  boolean testPlacedMines(Tester t) {
+    GameWorld game = new GameWorld(20, 10, 10);
+
+    ArrayList<Cell> placedMines = new ArrayList<>();
+    for (ArrayList<Cell> row : game.board) {
+      for (Cell cell : row) {
+        if (cell.hasBomb) {
+          placedMines.add(cell);
+        }
+      }
+    }
+    for (int i = 0; i < game.rows; i++) {
+      for (int j = 0; j < game.columns; j++) {
+        Cell currentCell = game.board.get(i).get(j);
+        if (currentCell.hasBomb) {
+          System.out.println("Mine placed at: Row " + i + ", Column " + j);
+        }
+      }
+    }
+    System.out.println("Mine list size is: " + placedMines.size());
+    // This test doesn't actually test anything, it's just for the sake of printing out the above stuff.
+    // That's what I am really looking for. All mines, # of mines, and no duplicate mines.
+    return t.checkExpect(placedMines.contains(game.board.get(1).get(1)), true);
   }
 }
 
