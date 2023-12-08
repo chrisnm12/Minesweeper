@@ -56,6 +56,7 @@ class GameWorld extends AWorld {
   }
   GameWorld(int bombCount, int rows, int columns, Random rand) {
     super(bombCount, rows, columns);
+    this.rand = rand;
     this.board = new ArrayList<>();
 
     for (int i = 0; i < rows; i++) {
@@ -68,9 +69,32 @@ class GameWorld extends AWorld {
       }
       this.board.add(row);
     }
-
-    this.rand = rand;
+    neighboringCells();
   }
+  public void neighboringCells() {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < columns; j++) {
+        Cell currentCell = this.board.get(i).get(j);
+        currentCell.neighbors.clear();
+          for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+              int neighborX = i + dx;
+              int neighborY = j + dy;
+
+              if (isValidPosition(neighborX, neighborY) && !(dx == 0 && dy == 0)) {
+                Cell neighborCell = this.board.get(neighborX).get(neighborY);
+                currentCell.neighbors.add(neighborCell);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    private boolean isValidPosition(int x, int y) {
+      return x >= 0 && x < columns && y >= 0 && y < rows;
+    }
+
   public WorldImage makeBoard() {
     int cellWidth = 1000 / columns;
     int cellHeight = 600 / rows;
@@ -121,11 +145,62 @@ class EndWorld extends AWorld {
 
 class ExamplesMinesweeper {
   boolean testBigBang(Tester t) {
-    World w = new StartingWorld(20, 10, 10, new Random());
+    World w = new StartingWorld(20, 10, 10);
     int worldWidth = 1000;
     int worldHeight = 600;
     double tickRate = 0.0357142857;
     return w.bigBang(worldWidth, worldHeight, tickRate);
+  }
+  boolean testNeighborCells3(Tester t) {
+    GameWorld game = new GameWorld(20, 10, 10);
+    Cell cell = game.board.get(0).get(0);
+
+    Cell expectedNeighbor1 = game.board.get(0).get(1);
+    Cell expectedNeighbor2 = game.board.get(1).get(0);
+    Cell expectedNeighbor3 = game.board.get(1).get(1);
+
+    ArrayList<Cell> expectedNeighbors = new ArrayList<>();
+    expectedNeighbors.add(expectedNeighbor1);
+    expectedNeighbors.add(expectedNeighbor2);
+    expectedNeighbors.add(expectedNeighbor3);
+
+    return t.checkExpect(cell.neighbors.size(), expectedNeighbors.size()) &&
+      t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
+      t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
+      t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true);
+  }
+  boolean testNeighborCells8(Tester t) {
+    GameWorld game = new GameWorld(20, 10, 10);
+    Cell cell = game.board.get(5).get(5);
+
+    Cell expectedNeighbor1 = game.board.get(6).get(6);
+    Cell expectedNeighbor2 = game.board.get(6).get(5);
+    Cell expectedNeighbor3 = game.board.get(6).get(4);
+    Cell expectedNeighbor4 = game.board.get(5).get(4);
+    Cell expectedNeighbor5 = game.board.get(5).get(6);
+    Cell expectedNeighbor6 = game.board.get(4).get(6);
+    Cell expectedNeighbor7 = game.board.get(4).get(5);
+    Cell expectedNeighbor8 = game.board.get(4).get(4);
+
+    ArrayList<Cell> expectedNeighbors = new ArrayList<>();
+    expectedNeighbors.add(expectedNeighbor1);
+    expectedNeighbors.add(expectedNeighbor2);
+    expectedNeighbors.add(expectedNeighbor3);
+    expectedNeighbors.add(expectedNeighbor4);
+    expectedNeighbors.add(expectedNeighbor5);
+    expectedNeighbors.add(expectedNeighbor6);
+    expectedNeighbors.add(expectedNeighbor7);
+    expectedNeighbors.add(expectedNeighbor8);
+
+    return t.checkExpect(cell.neighbors.size(), expectedNeighbors.size()) &&
+      t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
+        t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
+          t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor4), true) &&
+              t.checkExpect(cell.neighbors.contains(expectedNeighbor5), true) &&
+                t.checkExpect(cell.neighbors.contains(expectedNeighbor6), true) &&
+                  t.checkExpect(cell.neighbors.contains(expectedNeighbor7), true) &&
+                    t.checkExpect(cell.neighbors.contains(expectedNeighbor8), true);
   }
 }
 
