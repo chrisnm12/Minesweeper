@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9d4f1da3-7a68-44dd-8d74-c2fdc9296361" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IGamePieces.java" beforeDir="false" afterPath="$PROJECT_DIR$/IGamePieces.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,13 +35,21 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RunManager">
+    <configuration name="Minesweeper.java" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="tester.Main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -51,6 +60,12 @@
       <updated>1701785439583</updated>
       <workItem from="1701785443227" duration="1343000" />
       <workItem from="1701786877597" duration="103000" />
+      <workItem from="1701787107384" duration="448000" />
+      <workItem from="1701787585698" duration="1598000" />
+      <workItem from="1701901407677" duration="17000" />
+      <workItem from="1701901442483" duration="2011000" />
+      <workItem from="1702010613609" duration="2000" />
+      <workItem from="1702010756666" duration="1366000" />
     </task>
     <servers />
   </component>
