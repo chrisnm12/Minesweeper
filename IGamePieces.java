@@ -19,24 +19,49 @@ class StartingText implements IGamePieces {
     this.text = text;
     this.size = size;
   }
+  // Draw Text
   public WorldImage draw() {
     return new TextImage(this.text, this.size, FontStyle.BOLD, Color.BLACK);
   }
 }
 
 class Mine implements IGamePieces {
+  // Draw a mine
   public WorldImage draw() {
     return new CircleImage(15, OutlineMode.SOLID, Color.RED);
   }
 }
 
-class Cell implements IGamePieces {
+class Cell {
+  ArrayList<Cell> neighbors;
+  boolean hasBomb;
+  int height;
+  int width;
+  Cell(int height, int width){
+    this.neighbors = new ArrayList<>();
+    this.hasBomb = false;
+    this.height = height;
+    this.width = width;
+  }
+  // Draw a Cell
   public WorldImage draw() {
-    return new RectangleImage(10, 10, OutlineMode.SOLID, Color.cyan);
+    return new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
+  }
+
+  // Count the number of neighboring mines
+  public int countNeighboringMines() {
+    int count = 0;
+    for (Cell neighbor : this.neighbors) {
+      if (neighbor.hasBomb) {
+        count++;
+      }
+    }
+    return count;
   }
 }
 
 class Flag implements IGamePieces {
+  // Draw a Flag
   public WorldImage draw() {
     return new TriangleImage(new Posn(0, 0), new Posn(10,10), new Posn(20, 0), OutlineMode.SOLID, Color.orange);
   }
@@ -47,7 +72,10 @@ class Numbers implements IGamePieces {
   Numbers(int num) {
     this.num = num;
   }
+  // Draw a Number
   public WorldImage draw() {
     return new TextImage("" + this.num, Color.BLACK);
   }
 }
+
+

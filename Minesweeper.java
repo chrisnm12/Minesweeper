@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javalib.funworld.World;
 import javalib.funworld.WorldScene;
@@ -14,11 +13,11 @@ public class Minesweeper {
 }
 
 abstract class AWorld extends World {
-  int bombCount;
+  int mineCount;
   int rows;
   int columns;
-  AWorld(int bombCount, int rows, int columns) {
-    this.bombCount = bombCount;
+  AWorld(int mineCount, int rows, int columns) {
+    this.mineCount = mineCount;
     this.rows = rows;
     this.columns = columns;
   }
@@ -26,14 +25,15 @@ abstract class AWorld extends World {
 
 class StartingWorld extends AWorld {
   Random rand;
-  StartingWorld(int bombCount, int rows, int columns) {this(bombCount, rows, columns, new Random());}
-  StartingWorld(int bombCount, int rows, int columns, Random rand) {
-    super(bombCount, rows, columns);
+  StartingWorld(int mineCount, int rows, int columns) {this(mineCount, rows, columns, new Random());}
+  StartingWorld(int mineCount, int rows, int columns, Random rand) {
+    super(mineCount, rows, columns);
     this.rand = rand;
   }
+  // Start the game when the player left clicks.
   public World onMouseClicked (Posn pos, String buttonname) {
     if (buttonname.equals("LeftButton")) {
-      return new GameWorld(bombCount, rows, columns);
+      return new GameWorld(mineCount, rows, columns);
     } else {
       return this;
     }
@@ -43,23 +43,24 @@ class StartingWorld extends AWorld {
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
     IGamePieces text = new StartingText("Click Start", 50);
-    IGamePieces bombText = new StartingText("Bombs: " + this.bombCount, 25);
+    IGamePieces mineText = new StartingText("Mines: " + this.mineCount, 25);
     WorldScene scene1 = scene.placeImageXY(text.draw(), 250, 150);
-    return scene1.placeImageXY(bombText.draw(), 70,280);
+    return scene1.placeImageXY(mineText.draw(), 70,280);
   }
 }
 
 class GameWorld extends AWorld {
   Random rand;
   ArrayList<ArrayList<Cell>> board;
-  GameWorld(int bombCount, int rows, int columns) {
-    this(bombCount, rows, columns, new Random());
+  GameWorld(int mineCount, int rows, int columns) {
+    this(mineCount, rows, columns, new Random());
   }
-  GameWorld(int bombCount, int rows, int columns, Random rand) {
-    super(bombCount, rows, columns);
+  GameWorld(int mineCount, int rows, int columns, Random rand) {
+    super(mineCount, rows, columns);
     this.rand = rand;
     this.board = new ArrayList<>();
 
+    // This creates the board.
     for (int i = 0; i < rows; i++) {
       ArrayList<Cell> row = new ArrayList<>();
       int cellWidth =  (1000 / columns) - 10;
@@ -73,11 +74,12 @@ class GameWorld extends AWorld {
     neighboringCells();
     placeMines();
   }
+  // This goes through the board and adds a mine to mineCount amount of cells
   public void placeMines() {
     ArrayList<Integer> placedMines = new ArrayList<>();
     int totalCells = rows * columns;
 
-    while (placedMines.size() < this.bombCount) {
+    while (placedMines.size() < this.mineCount) {
       int randomCell = rand.nextInt(totalCells);
 
       if (!placedMines.contains(randomCell)) {
@@ -90,7 +92,7 @@ class GameWorld extends AWorld {
       }
     }
   }
-
+  // Gives each cell its list of neighbors.
   public void neighboringCells() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
@@ -110,11 +112,11 @@ class GameWorld extends AWorld {
         }
       }
     }
-
+    // Verifies that the neighbor cell is an actual/valid cell.
     private boolean isValidPosition(int x, int y) {
       return x >= 0 && x < columns && y >= 0 && y < rows;
     }
-
+  // Creates the game board
   public WorldImage makeBoard() {
     int cellWidth = 1000 / columns;
     int cellHeight = 600 / rows;
@@ -150,9 +152,9 @@ class GameWorld extends AWorld {
 
 class EndWorld extends AWorld {
   Random rand;
-  EndWorld(int bombCount, int rows, int columns) {this(bombCount, rows, columns, new Random());}
-  EndWorld(int bombCount, int rows, int columns, Random rand) {
-    super(bombCount, rows, columns);
+  EndWorld(int mineCount, int rows, int columns) {this(mineCount, rows, columns, new Random());}
+  EndWorld(int mineCount, int rows, int columns, Random rand) {
+    super(mineCount, rows, columns);
     this.rand = rand;
   }
   @Override
@@ -243,8 +245,9 @@ class ExamplesMinesweeper {
       }
     }
     System.out.println("Mine list size is: " + placedMines.size());
+    System.out.println("Number of nearby mines for cell(1,1) is: " + game.board.get(1).get(1).countNeighboringMines());
     // This test doesn't actually test anything, it's just for the sake of printing out the above stuff.
-    // That's what I am really looking for. All mines, # of mines, and no duplicate mines.
+    // That's what I am really looking for. All mines, # of mines, no duplicate mines, and if neighboringMines works.
     return t.checkExpect(placedMines.contains(game.board.get(1).get(1)), true);
   }
 }
