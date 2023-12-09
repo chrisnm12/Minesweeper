@@ -35,17 +35,26 @@ class Mine implements IGamePieces {
 class Cell {
   ArrayList<Cell> neighbors;
   boolean hasBomb;
+  boolean hasFlag;
   int height;
   int width;
   Cell(int height, int width){
     this.neighbors = new ArrayList<>();
     this.hasBomb = false;
+    this.hasFlag = false;
     this.height = height;
     this.width = width;
   }
   // Draw a Cell
   public WorldImage draw() {
-    return new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
+    WorldImage cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
+    WorldImage flagImage = new Flag().draw();
+
+    if (hasFlag) {
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, flagImage, 0, 0, cellImage);
+      return cellImage;
+    }
+    return cellImage;
   }
 
   // Count the number of neighboring mines
@@ -58,6 +67,7 @@ class Cell {
     }
     return count;
   }
+
 }
 
 class Flag implements IGamePieces {

@@ -74,6 +74,25 @@ class GameWorld extends AWorld {
     neighboringCells();
     placeMines();
   }
+  // Currently, adds/removes flags from cells if the player right-clicks on it.
+  @Override
+  public World onMouseClicked(Posn pos, String button) {
+    if (button.equals("RightButton")) {
+      int mouseX = pos.x;
+      int mouseY = pos.y;
+      int cellWidth = (1000 / columns);
+      int cellHeight = (600 / rows);
+      int clickedRow = (rows - 1) - (mouseY / cellHeight);
+      int clickedCol = (columns - 1) - (mouseX / cellWidth);
+
+      if (isValidPosition(clickedRow, clickedCol)) {
+        Cell clickedCell = board.get(clickedRow).get(clickedCol);
+        clickedCell.hasFlag = !clickedCell.hasFlag;
+      }
+    }
+    return this;
+  }
+
   // This goes through the board and adds a mine to mineCount amount of cells
   public void placeMines() {
     ArrayList<Integer> placedMines = new ArrayList<>();
