@@ -36,12 +36,14 @@ class Cell {
   ArrayList<Cell> neighbors;
   boolean hasBomb;
   boolean hasFlag;
+  boolean isRevealed;
   int height;
   int width;
   Cell(int height, int width){
     this.neighbors = new ArrayList<>();
     this.hasBomb = false;
     this.hasFlag = false;
+    this.isRevealed = false;
     this.height = height;
     this.width = width;
   }
@@ -51,7 +53,18 @@ class Cell {
     WorldImage flagImage = new Flag().draw();
 
     if (hasFlag) {
+      if (isRevealed) {
+        cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
+      }
       cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, flagImage, 0, 0, cellImage);
+      return cellImage;
+    }
+    else if (isRevealed) {
+      cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, new Numbers(this.countNeighboringMines(), (this.height / 3)).draw(), 0, 0, cellImage);
+    }
+    else if (hasBomb) {
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, new Mine().draw(), 0,0, cellImage);
       return cellImage;
     }
     return cellImage;
@@ -67,7 +80,20 @@ class Cell {
     }
     return count;
   }
-
+  public boolean neighborBombs() {
+    return this.neighborBombsHelper(0);
+  }
+  public boolean neighborBombsHelper(int index) {
+    if (index >= this.neighbors.size()) {
+      return false;
+    }
+    Cell currentNeighbor = this.neighbors.get(index);
+    if (currentNeighbor.hasBomb) {
+      return this.neighborBombsHelper(index + 1);
+    }
+    currentNeighbor.isRevealed = true;
+    return this.neighborBombsHelper(index + 1);
+  }
 }
 
 class Flag implements IGamePieces {
@@ -79,12 +105,14 @@ class Flag implements IGamePieces {
 
 class Numbers implements IGamePieces {
   int num;
-  Numbers(int num) {
+  int size;
+  Numbers(int num, int size) {
     this.num = num;
+    this.size = size;
   }
   // Draw a Number
   public WorldImage draw() {
-    return new TextImage("" + this.num, Color.BLACK);
+    return new TextImage("" + this.num, this.size, FontStyle.BOLD, Color.WHITE);
   }
 }
 

@@ -42,10 +42,12 @@ class StartingWorld extends AWorld {
   @Override
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
-    IGamePieces text = new StartingText("Click Start", 50);
+    IGamePieces text = new StartingText("Click to Start", 50);
     IGamePieces mineText = new StartingText("Mines: " + this.mineCount, 25);
-    WorldScene scene1 = scene.placeImageXY(text.draw(), 250, 150);
-    return scene1.placeImageXY(mineText.draw(), 70,280);
+    IGamePieces gridText = new StartingText("Grid Size: " + this.columns + " x " + this.rows, 25);
+    WorldScene scene1 = scene.placeImageXY(text.draw(), 500, 300);
+    WorldScene scene2 = scene1.placeImageXY(gridText.draw(), 850,580);
+    return scene2.placeImageXY(mineText.draw(), 70,580);
   }
 }
 
@@ -74,7 +76,27 @@ class GameWorld extends AWorld {
     neighboringCells();
     placeMines();
   }
-  // Currently, adds/removes flags from cells if the player right-clicks on it.
+
+  public int isRevealedCounter() {
+    int count = 0;
+
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < columns; j++) {
+        Cell currentCell = this.board.get(i).get(j);
+        if (currentCell.isRevealed) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+  @Override
+  public World onTick() {
+    if (this.isRevealedCounter() == ((rows * columns) - mineCount)) {
+      return new EndWorld(mineCount, rows, columns, new Random(), 1);
+    }
+    return this;
+  }
   @Override
   public World onMouseClicked(Posn pos, String button) {
     if (button.equals("RightButton")) {
@@ -87,7 +109,31 @@ class GameWorld extends AWorld {
 
       if (isValidPosition(clickedRow, clickedCol)) {
         Cell clickedCell = board.get(clickedRow).get(clickedCol);
+
+        if (clickedCell.isRevealed) {
+          return this;
+        }
         clickedCell.hasFlag = !clickedCell.hasFlag;
+      }
+    }
+    else if (button.equals("LeftButton")) {
+      int mouseX = pos.x;
+      int mouseY = pos.y;
+      int cellWidth = (1000 / columns);
+      int cellHeight = (600 / rows);
+      int clickedRow = (rows - 1) - (mouseY / cellHeight);
+      int clickedCol = (columns - 1) - (mouseX / cellWidth);
+
+      if (isValidPosition(clickedRow, clickedCol)) {
+        Cell clickedCell = board.get(clickedRow).get(clickedCol);
+        if (clickedCell.hasFlag) {
+          return this;
+        }
+        else if (clickedCell.hasBomb) {
+          return new EndWorld(mineCount, rows, columns, new Random(), 0);
+        }
+        clickedCell.isRevealed = true;
+        clickedCell.neighborBombs();
       }
     }
     return this;
@@ -164,24 +210,31 @@ class GameWorld extends AWorld {
     IGamePieces mine = new Mine();
     Cell cell = new Cell(10, 10);
     IGamePieces flag = new Flag();
-    IGamePieces number = new Numbers(3);
+    IGamePieces number = new Numbers(3, 25);
     return scene1;
   }
 }
 
 class EndWorld extends AWorld {
   Random rand;
-  EndWorld(int mineCount, int rows, int columns) {this(mineCount, rows, columns, new Random());}
-  EndWorld(int mineCount, int rows, int columns, Random rand) {
+  int winner;
+  EndWorld(int mineCount, int rows, int columns) {this(mineCount, rows, columns, new Random(), 0);}
+  EndWorld(int mineCount, int rows, int columns, Random rand, int winner) {
     super(mineCount, rows, columns);
     this.rand = rand;
+    this.winner = winner;
   }
   @Override
   public WorldScene makeScene() {
-    return null;
+    WorldScene scene = getEmptyScene();
+    WorldImage gameOver = new TextImage("Game Over!", 50, FontStyle.BOLD_ITALIC, Color.BLACK);
+    WorldImage gameWinner = new TextImage("You Win!", 50, FontStyle.BOLD_ITALIC, Color.BLACK);
+    if (this.winner == 0) {
+    return scene.placeImageXY(gameOver, 500, 300);
+    }
+    return scene.placeImageXY(gameWinner, 500, 300);
   }
 }
-
 
 
 class ExamplesMinesweeper {
