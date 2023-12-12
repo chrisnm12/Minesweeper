@@ -26,9 +26,13 @@ class StartingText implements IGamePieces {
 }
 
 class Mine implements IGamePieces {
+  int size;
+  Mine(int size) {
+    this.size = size;
+  }
   // Draw a mine
   public WorldImage draw() {
-    return new CircleImage(15, OutlineMode.SOLID, Color.RED);
+    return new CircleImage(this.size, OutlineMode.SOLID, Color.RED);
   }
 }
 
@@ -60,9 +64,9 @@ class Cell {
       return cellImage;
     }
     else if (hasBomb) {
-      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, new Mine().draw());
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, new Mine(1 / (3 * this.height)).draw());
       if (isRevealed) {
-        cellImage = new Mine().draw();
+        cellImage = new Mine(1 / (3 * this.height)).draw();
         return cellImage;
       }
       return cellImage;
@@ -108,7 +112,6 @@ class Cell {
 }
 
 class Flag implements IGamePieces {
-  // Draw a Flag
   public WorldImage draw() {
     return new TriangleImage(new Posn(0, 0), new Posn(10,10), new Posn(20, 0), OutlineMode.SOLID, Color.orange);
   }

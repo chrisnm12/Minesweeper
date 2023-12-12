@@ -210,7 +210,7 @@ class GameWorld extends AWorld {
     WorldImage gameBoardImage = this.makeBoard();
     WorldScene scene1 = scene.placeImageXY(gameBoardImage, 500, 300);
     IGamePieces text = new StartingText("GAME", 50);
-    IGamePieces mine = new Mine();
+    IGamePieces mine = new Mine(15);
     Cell cell = new Cell(10, 10);
     IGamePieces flag = new Flag();
     IGamePieces number = new Numbers(3, 25);
@@ -242,7 +242,7 @@ class EndWorld extends AWorld {
 
 class ExamplesMinesweeper {
   boolean testBigBang(Tester t) {
-    World w = new StartingWorld(10, 10, 10);
+    World w = new StartingWorld(20, 10, 10);
     int worldWidth = 1000;
     int worldHeight = 600;
     double tickRate = 0.0357142857;
