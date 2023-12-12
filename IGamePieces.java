@@ -59,13 +59,17 @@ class Cell {
       cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, flagImage, 0, 0, cellImage);
       return cellImage;
     }
+    else if (hasBomb) {
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, new Mine().draw());
+      if (isRevealed) {
+        cellImage = new Mine().draw();
+        return cellImage;
+      }
+      return cellImage;
+    }
     else if (isRevealed) {
       cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
       cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, new Numbers(this.countNeighboringMines(), (this.height / 3)).draw(), 0, 0, cellImage);
-    }
-    else if (hasBomb) {
-      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, new Mine().draw(), 0,0, cellImage);
-      return cellImage;
     }
     return cellImage;
   }
@@ -88,10 +92,17 @@ class Cell {
       return false;
     }
     Cell currentNeighbor = this.neighbors.get(index);
-    if (currentNeighbor.hasBomb) {
+
+    if (currentNeighbor.hasBomb || currentNeighbor.isRevealed || currentNeighbor.hasFlag) {
+      return this.neighborBombsHelper(index + 1);
+    } else if (currentNeighbor.countNeighboringMines() == 0) {
+      currentNeighbor.isRevealed = true;
+      currentNeighbor.neighborBombs();
+      return this.neighborBombsHelper(index + 1);
+    } else if (currentNeighbor.countNeighboringMines() != 0) {
+      currentNeighbor.isRevealed = true;
       return this.neighborBombsHelper(index + 1);
     }
-    currentNeighbor.isRevealed = true;
     return this.neighborBombsHelper(index + 1);
   }
 }

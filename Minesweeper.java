@@ -130,10 +130,13 @@ class GameWorld extends AWorld {
           return this;
         }
         else if (clickedCell.hasBomb) {
+          clickedCell.isRevealed = true;
           return new EndWorld(mineCount, rows, columns, new Random(), 0);
         }
         clickedCell.isRevealed = true;
-        clickedCell.neighborBombs();
+        if (clickedCell.countNeighboringMines() == 0) {
+          clickedCell.neighborBombs();
+        }
       }
     }
     return this;
@@ -239,7 +242,7 @@ class EndWorld extends AWorld {
 
 class ExamplesMinesweeper {
   boolean testBigBang(Tester t) {
-    World w = new StartingWorld(20, 10, 10);
+    World w = new StartingWorld(10, 10, 10);
     int worldWidth = 1000;
     int worldHeight = 600;
     double tickRate = 0.0357142857;
