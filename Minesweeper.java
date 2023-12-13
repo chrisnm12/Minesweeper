@@ -8,9 +8,19 @@ import java.awt.Color;
 import java.util.Random;
 
 import javalib.worldimages.*;
-public class Minesweeper {
 
-}
+/*
+ * fields:
+ * ...this.mineCount...--int
+ * ...this.rows...--int
+ * ...this.columns...--int
+ *
+ * methods:
+ *
+ *
+ *
+ * */
+
 
 abstract class AWorld extends World {
   int mineCount;
@@ -22,6 +32,28 @@ abstract class AWorld extends World {
     this.columns = columns;
   }
 }
+
+/*
+ *
+ * To create the initial scene of the text that appears click to start
+ *
+ * fields:
+ *
+ * ...this.rand...-- Random
+ *  ...this.mineCount...--int
+ * ...this.rows...--int
+ * ...this.columns...--int
+ *
+ * methods:
+ * // Starts the game when the player left clicks.
+ * onMouseClicked()-- World
+ *
+ * // shows the initial scene of the game which is a Text telling the player to click to start
+ * makeScene()-- WorldScene
+ *
+ *
+ * */
+
 
 class StartingWorld extends AWorld {
   Random rand;
@@ -39,7 +71,7 @@ class StartingWorld extends AWorld {
     }
   }
 
-  @Override
+  // shows the initial scene of the game which is a Text telling the player to click to start
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
     IGamePieces text = new StartingText("Click to Start", 50);
@@ -50,6 +82,33 @@ class StartingWorld extends AWorld {
     return scene2.placeImageXY(mineText.draw(), 70,580);
   }
 }
+
+
+/*
+ *
+ * The actual world of the game.
+ *
+ * fields:
+ *
+ * ...this.rand...--Random
+ * ...board...--ArrayList<Cell>
+ * ...this.mineCount...--int
+ * ...this.rows...--int
+ * ...this.columns...--int
+ *
+ * methods:
+ *
+ * // counts the amount of cells that are revealed.
+ * isRevealed()--int
+ *
+ * // checks to see if the game is at an end state
+ * onTick()--World
+ *
+ * // processes the different clicks that could occur in the game.
+ * onMouseClicked()
+ *
+ *
+ * */
 
 class GameWorld extends AWorld {
   Random rand;
@@ -63,6 +122,8 @@ class GameWorld extends AWorld {
     this.board = new ArrayList<>();
 
     // This creates the board.
+    // using a double for loop to get grid style board for the game
+    // this is initializing the columns in a row and then putting the row into the board and continues on until there are no more rows to initialize.
     for (int i = 0; i < rows; i++) {
       ArrayList<Cell> row = new ArrayList<>();
       int cellWidth =  (1000 / columns) - 10;
@@ -77,6 +138,7 @@ class GameWorld extends AWorld {
     placeMines();
   }
 
+  // counts the amount of cells that are revealed.
   public int isRevealedCounter() {
     int count = 0;
 
@@ -90,14 +152,15 @@ class GameWorld extends AWorld {
     }
     return count;
   }
-  @Override
+  // checks to see if the game is at an end state
   public World onTick() {
     if (this.isRevealedCounter() == ((rows * columns) - mineCount)) {
       return new EndWorld(mineCount, rows, columns, new Random(), 1);
     }
     return this;
   }
-  @Override
+
+  // processes the different clicks that could occur in the game.
   public World onMouseClicked(Posn pos, String button) {
     if (button.equals("RightButton")) {
       int mouseX = pos.x;
@@ -143,6 +206,7 @@ class GameWorld extends AWorld {
   }
 
   // This goes through the board and adds a mine to mineCount amount of cells
+  // EFFECT: this mutates a random cell on the board and sets the hasBomb to true.
   public void placeMines() {
     ArrayList<Integer> placedMines = new ArrayList<>();
     int totalCells = rows * columns;
@@ -156,7 +220,7 @@ class GameWorld extends AWorld {
         int col = randomCell % columns;
 
         Cell cell = this.board.get(row).get(col);
-        cell.hasBomb = true;
+        cell.giveBomb();
       }
     }
   }
@@ -166,24 +230,24 @@ class GameWorld extends AWorld {
       for (int j = 0; j < columns; j++) {
         Cell currentCell = this.board.get(i).get(j);
         currentCell.neighbors.clear();
-          for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-              int neighborX = i + dx;
-              int neighborY = j + dy;
+        for (int dx = -1; dx <= 1; dx++) {
+          for (int dy = -1; dy <= 1; dy++) {
+            int neighborX = i + dx;
+            int neighborY = j + dy;
 
-              if (isValidPosition(neighborX, neighborY) && !(dx == 0 && dy == 0)) {
-                Cell neighborCell = this.board.get(neighborX).get(neighborY);
-                currentCell.neighbors.add(neighborCell);
-              }
+            if (isValidPosition(neighborX, neighborY) && !(dx == 0 && dy == 0)) {
+              Cell neighborCell = this.board.get(neighborX).get(neighborY);
+              currentCell.addNeighbor(neighborCell);
             }
           }
         }
       }
     }
-    // Verifies that the neighbor cell is an actual/valid cell.
-    private boolean isValidPosition(int x, int y) {
-      return x >= 0 && x < columns && y >= 0 && y < rows;
-    }
+  }
+  // Verifies that the neighbor cell is an actual/valid cell.
+  private boolean isValidPosition(int x, int y) {
+    return x >= 0 && x < columns && y >= 0 && y < rows;
+  }
   // Creates the game board
   public WorldImage makeBoard() {
     int cellWidth = 1000 / columns;
@@ -233,7 +297,7 @@ class EndWorld extends AWorld {
     WorldImage gameOver = new TextImage("Game Over!", 50, FontStyle.BOLD_ITALIC, Color.BLACK);
     WorldImage gameWinner = new TextImage("You Win!", 50, FontStyle.BOLD_ITALIC, Color.BLACK);
     if (this.winner == 0) {
-    return scene.placeImageXY(gameOver, 500, 300);
+      return scene.placeImageXY(gameOver, 500, 300);
     }
     return scene.placeImageXY(gameWinner, 500, 300);
   }
@@ -262,9 +326,9 @@ class ExamplesMinesweeper {
     expectedNeighbors.add(expectedNeighbor3);
 
     return t.checkExpect(cell.neighbors.size(), expectedNeighbors.size()) &&
-      t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
-      t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
-      t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true);
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true);
   }
   boolean testNeighborCells8(Tester t) {
     GameWorld game = new GameWorld(20, 10, 10);
@@ -290,14 +354,14 @@ class ExamplesMinesweeper {
     expectedNeighbors.add(expectedNeighbor8);
 
     return t.checkExpect(cell.neighbors.size(), expectedNeighbors.size()) &&
-      t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
-        t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
-          t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor1), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor2), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor3), true) &&
             t.checkExpect(cell.neighbors.contains(expectedNeighbor4), true) &&
-              t.checkExpect(cell.neighbors.contains(expectedNeighbor5), true) &&
-                t.checkExpect(cell.neighbors.contains(expectedNeighbor6), true) &&
-                  t.checkExpect(cell.neighbors.contains(expectedNeighbor7), true) &&
-                    t.checkExpect(cell.neighbors.contains(expectedNeighbor8), true);
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor5), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor6), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor7), true) &&
+            t.checkExpect(cell.neighbors.contains(expectedNeighbor8), true);
   }
 
   boolean testPlacedMines(Tester t) {
