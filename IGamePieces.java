@@ -8,10 +8,23 @@ import java.util.Random;
 
 import javalib.worldimages.*;
 
+
+
 public interface IGamePieces {
   WorldImage draw();
 }
-
+/*
+*
+* Offers text to implement the IGamePieces interface to provide text to the screen.
+*
+* fields:
+* ...text...-- String
+* ...size...-- int
+*
+* methods:
+* draw()-- WorldImage
+*
+* */
 class StartingText implements IGamePieces {
   String text;
   int size;
@@ -19,22 +32,62 @@ class StartingText implements IGamePieces {
     this.text = text;
     this.size = size;
   }
-  // Draw Text
+  // returns a WorldImage of text.
   public WorldImage draw() {
     return new TextImage(this.text, this.size, FontStyle.BOLD, Color.BLACK);
   }
 }
 
+
+ /*
+ * mainly used to draw the mine onto the screen
+ *
+ *fields:
+ *...size...--int
+ *
+ *methods:
+ *draw()-- WorldImage
+ *
+ *
+ */
 class Mine implements IGamePieces {
   int size;
   Mine(int size) {
     this.size = size;
   }
-  // Draw a mine
+  // Draws a mine
   public WorldImage draw() {
     return new CircleImage(this.size, OutlineMode.SOLID, Color.RED);
   }
 }
+
+
+/*
+*
+*
+* fields:
+* ...hasBomb...--boolean
+* ...hasFlag...--boolean
+* ...isRevealed...-- boolean
+* ...heights...-- int
+* ...width...--int
+*
+* methods:
+*
+* // returns the image of a cell
+* draw()--WorldImage
+*
+* // counts the number of mines within this.neighbors
+* countNeighboringMines()-- int
+*
+* // revealing neighboring cells without bombs.
+* // EFFECT: changes the reveal to true if there are no bombs found in this.neighbors
+* neighborBombs()-- boolean
+*
+* //
+*
+* */
+
 
 class Cell {
   ArrayList<Cell> neighbors;
@@ -51,7 +104,7 @@ class Cell {
     this.height = height;
     this.width = width;
   }
-  // Draw a Cell
+  // drawing the image of a cell.
   public WorldImage draw() {
     WorldImage cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
     WorldImage flagImage = new Flag().draw();
@@ -88,9 +141,14 @@ class Cell {
     }
     return count;
   }
+
+// revealing neighboring cells without bombs.
   public boolean neighborBombs() {
     return this.neighborBombsHelper(0);
   }
+
+  // reveals neighboring cells without bombs in this.neighbors
+  // EFFECT: changes the reveal to true if there are no bombs found in this.neighbors
   public boolean neighborBombsHelper(int index) {
     if (index >= this.neighbors.size()) {
       return false;
@@ -111,12 +169,34 @@ class Cell {
   }
 }
 
+/*
+* To draw the image of a flag
+*
+* methods:
+*
+* draw()-- WorldImage
+*
+* */
 class Flag implements IGamePieces {
   public WorldImage draw() {
     return new TriangleImage(new Posn(0, 0), new Posn(10,10), new Posn(20, 0), OutlineMode.SOLID, Color.orange);
   }
 }
 
+/*
+*
+* Used to draw the text for a number to put into the cell later on.
+*
+* fields:
+*
+* ...num...--int
+* ...size...--int
+*
+* methods:
+*
+* draw()-- WorldImage
+*
+* */
 class Numbers implements IGamePieces {
   int num;
   int size;
