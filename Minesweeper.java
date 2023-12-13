@@ -19,6 +19,7 @@ import javalib.worldimages.*;
  *
  *
  *
+ *
  * */
 
 
@@ -85,30 +86,48 @@ class StartingWorld extends AWorld {
 
 
 /*
- *
- * The actual world of the game.
- *
- * fields:
- *
- * ...this.rand...--Random
- * ...board...--ArrayList<Cell>
- * ...this.mineCount...--int
- * ...this.rows...--int
- * ...this.columns...--int
- *
- * methods:
- *
- * // counts the amount of cells that are revealed.
- * isRevealed()--int
- *
- * // checks to see if the game is at an end state
- * onTick()--World
- *
- * // processes the different clicks that could occur in the game.
- * onMouseClicked()
- *
- *
- * */
+*
+* The actual world of the game.
+*
+* fields:
+*
+* ...this.rand...--Random
+* ...board...--ArrayList<Cell>
+* ...this.mineCount...--int
+* ...this.rows...--int
+* ...this.columns...--int
+*
+* methods:
+*
+* // counts the amount of cells that are revealed.
+* isRevealed()--int
+*
+* // checks to see if the game is at an end state
+* onTick()--World
+*
+* // processes the different clicks that could occur in the game.
+* onMouseClicked()
+*
+* // This goes through the board and adds a mines according to the mineCount amount.
+  // EFFECT: this mutates a random cell on the board and sets the hasBomb to true.
+* placeMines()--void
+*
+* // Gives each cell its list of neighbors.
+* // EFFECT: a Cell is given all adjacent cells.
+* neighboringCells()--void
+*
+* // Verifies that the neighbor cell is an actual/valid cell.
+* private isValidPosition(int x, int y)-- boolean
+*
+* // Creates the game board for the World
+* makeBoard()--WorldImage
+*
+* // creates the scene for the game world.
+* makeScene()--WorldScene
+*
+*
+*
+* */
 
 class GameWorld extends AWorld {
   Random rand;
@@ -205,7 +224,7 @@ class GameWorld extends AWorld {
     return this;
   }
 
-  // This goes through the board and adds a mine to mineCount amount of cells
+  // This goes through the board and adds a mines according to the mineCount amount.
   // EFFECT: this mutates a random cell on the board and sets the hasBomb to true.
   public void placeMines() {
     ArrayList<Integer> placedMines = new ArrayList<>();
@@ -224,7 +243,9 @@ class GameWorld extends AWorld {
       }
     }
   }
+
   // Gives each cell its list of neighbors.
+  // EFFECT: a Cell is given all adjacent cells.
   public void neighboringCells() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
@@ -244,11 +265,13 @@ class GameWorld extends AWorld {
       }
     }
   }
+
   // Verifies that the neighbor cell is an actual/valid cell.
   private boolean isValidPosition(int x, int y) {
     return x >= 0 && x < columns && y >= 0 && y < rows;
   }
-  // Creates the game board
+
+  // Creates the game board for the World
   public WorldImage makeBoard() {
     int cellWidth = 1000 / columns;
     int cellHeight = 600 / rows;
@@ -268,19 +291,32 @@ class GameWorld extends AWorld {
     }
     return baseImage.movePinholeTo(new Posn(0,0));
   }
-  @Override
+
+  // creates the scene for the game world.
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
     WorldImage gameBoardImage = this.makeBoard();
     WorldScene scene1 = scene.placeImageXY(gameBoardImage, 500, 300);
-    IGamePieces text = new StartingText("GAME", 50);
-    IGamePieces mine = new Mine(15);
-    Cell cell = new Cell(10, 10);
-    IGamePieces flag = new Flag();
-    IGamePieces number = new Numbers(3, 25);
     return scene1;
   }
 }
+/*
+ *
+ * Fields:
+ *
+ * ...this.mineCount...--int
+ * ...this.rows...--int
+ * ...this.columns...--int
+ * this.rand...--Random
+ *
+ * methods:
+ *
+ * // returns the end scene based on this.winner status which could either be 1 = win or 0 = loser.
+ * makeScene()--WorldScene
+ *
+ *
+ *
+ * */
 
 class EndWorld extends AWorld {
   Random rand;
@@ -291,7 +327,8 @@ class EndWorld extends AWorld {
     this.rand = rand;
     this.winner = winner;
   }
-  @Override
+
+  // returns the end scene based on this.winner status which could either be 1 = win or 0 = loser.
   public WorldScene makeScene() {
     WorldScene scene = getEmptyScene();
     WorldImage gameOver = new TextImage("Game Over!", 50, FontStyle.BOLD_ITALIC, Color.BLACK);
@@ -302,6 +339,8 @@ class EndWorld extends AWorld {
     return scene.placeImageXY(gameWinner, 500, 300);
   }
 }
+
+
 
 
 class ExamplesMinesweeper {
