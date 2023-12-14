@@ -118,21 +118,13 @@ class Cell {
   public WorldImage draw() {
     WorldImage cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
     WorldImage flagImage = new Flag().draw();
+    WorldImage mineImage = new Mine(this.height / 3).draw();
 
     if (hasFlag) {
-      if (isRevealed) {
-        cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
-      }
       cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, flagImage, 0, 0, cellImage);
-      return cellImage;
     }
     else if (hasBomb) {
-      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, new Mine(1 / (3 * this.height)).draw());
-      if (isRevealed) {
-        cellImage = new Mine(1 / (3 * this.height)).draw();
-        return cellImage;
-      }
-      return cellImage;
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, mineImage);
     }
     else if (isRevealed) {
       cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
@@ -523,7 +515,6 @@ class ExampleCells {
   }
 
 }
-
 
 
 
