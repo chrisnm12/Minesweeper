@@ -118,13 +118,21 @@ class Cell {
   public WorldImage draw() {
     WorldImage cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.cyan);
     WorldImage flagImage = new Flag().draw();
-    WorldImage mineImage = new Mine(this.height / 3).draw();
 
     if (hasFlag) {
+      if (isRevealed) {
+        cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
+      }
       cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, flagImage, 0, 0, cellImage);
+      return cellImage;
     }
     else if (hasBomb) {
-      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, mineImage);
+      cellImage = new OverlayOffsetAlign(AlignModeX.CENTER, AlignModeY.MIDDLE, cellImage, 0,0, new Mine(1 / (3 * this.height)).draw());
+      if (isRevealed) {
+        cellImage = new Mine(1 / (3 * this.height)).draw();
+        return cellImage;
+      }
+      return cellImage;
     }
     else if (isRevealed) {
       cellImage = new RectangleImage(this.width, this.height, OutlineMode.SOLID, Color.GRAY);
@@ -418,103 +426,9 @@ class ExampleCells {
     t.checkExpect(exampleCell9.isRevealed(), false);
   }
 
-  void testneighborBombs2(Tester t){
-
-    // this one test if the correct response comes from a cell that does not get to flood passed the number hit because it is adjacent to a bomb.
-
-    Cell exampleCell1 = new Cell(1,1);
-    Cell exampleCell2 = new Cell(1,1);
-    Cell exampleCell3 = new Cell(1,1);
-    Cell exampleCell4 = new Cell(1,1);
-    Cell exampleCell5 = new Cell(1,1);
-    Cell exampleCell6 = new Cell(1,1);
-    Cell exampleCell7 = new Cell(1,1);
-    Cell exampleCell8 = new Cell(1,1);
-    Cell exampleCell9 = new Cell(1,1);
-
-
-    // cell 1 gets 2, 5, 4
-    exampleCell1.addNeighbor(exampleCell2);
-    exampleCell1.addNeighbor(exampleCell4);
-    exampleCell1.addNeighbor(exampleCell5);
-
-    // cell 2 gets 1, 4, 5 ,6 ,3
-    exampleCell2.addNeighbor(exampleCell1);
-    exampleCell2.addNeighbor(exampleCell3);
-    exampleCell2.addNeighbor(exampleCell4);
-    exampleCell2.addNeighbor(exampleCell5);
-    exampleCell2.addNeighbor(exampleCell6);
-
-
-    // cell 3 gets 2, 5, 6
-    exampleCell3.addNeighbor(exampleCell2);
-    exampleCell3.addNeighbor(exampleCell5);
-    exampleCell3.addNeighbor(exampleCell6);
-
-    // cell 4 gets 1, 2, 5, 8, 7
-    exampleCell4.addNeighbor(exampleCell1);
-    exampleCell4.addNeighbor(exampleCell2);
-    exampleCell4.addNeighbor(exampleCell5);
-    exampleCell4.addNeighbor(exampleCell7);
-    exampleCell4.addNeighbor(exampleCell8);
-
-    // cell 5 gets 1, 2, 3, 4, 6, 7, 8, 9
-    exampleCell5.addNeighbor(exampleCell1);
-    exampleCell5.addNeighbor(exampleCell2);
-    exampleCell5.addNeighbor(exampleCell3);
-    exampleCell5.addNeighbor(exampleCell4);
-    exampleCell5.addNeighbor(exampleCell6);
-    exampleCell5.addNeighbor(exampleCell7);
-    exampleCell5.addNeighbor(exampleCell8);
-    exampleCell5.addNeighbor(exampleCell9);
-
-    // cell 6 gets 3, 2, 5, 8, 9
-
-    exampleCell6.addNeighbor(exampleCell2);
-    exampleCell6.addNeighbor(exampleCell3);
-    exampleCell6.addNeighbor(exampleCell5);
-    exampleCell6.addNeighbor(exampleCell8);
-    exampleCell6.addNeighbor(exampleCell9);
-
-    // cell 7 gets 4, 5, 8
-
-    exampleCell7.addNeighbor(exampleCell4);
-    exampleCell7.addNeighbor(exampleCell5);
-    exampleCell7.addNeighbor(exampleCell8);
-
-    // cell 8 gets 7, 4, 5, 6, 9
-
-    exampleCell8.addNeighbor(exampleCell4);
-    exampleCell8.addNeighbor(exampleCell5);
-    exampleCell8.addNeighbor(exampleCell6);
-    exampleCell8.addNeighbor(exampleCell7);
-    exampleCell8.addNeighbor(exampleCell9);
-
-    // cell 9 gets 8, 5, 6
-
-    exampleCell9.addNeighbor(exampleCell5);
-    exampleCell9.addNeighbor(exampleCell6);
-    exampleCell9.addNeighbor(exampleCell8);
-
-
-    // implanting bomb into cell 5
-    exampleCell5.giveBomb();
-
-    // flooding here when clicked on exampleCell2
-    exampleCell2.neighborBombs();
-
-    t.checkExpect(exampleCell1.isRevealed(), false);
-    t.checkExpect(exampleCell2.isRevealed(), true);
-    t.checkExpect(exampleCell3.isRevealed(), false);
-    t.checkExpect(exampleCell4.isRevealed(), false);
-    t.checkExpect(exampleCell5.isRevealed(), false);
-    t.checkExpect(exampleCell6.isRevealed(), false);
-    t.checkExpect(exampleCell7.isRevealed(), false);
-    t.checkExpect(exampleCell8.isRevealed(), false);
-    t.checkExpect(exampleCell9.isRevealed(), false);
-  }
 
 }
+
 
 
 

@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d4f1da3-7a68-44dd-8d74-c2fdc9296361" name="Changes" comment="" />
+    <list default="true" id="9d4f1da3-7a68-44dd-8d74-c2fdc9296361" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/IGamePieces.java" beforeDir="false" afterPath="$PROJECT_DIR$/IGamePieces.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,13 +49,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="Minesweeper" />
-      <option name="filePath" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -82,6 +78,8 @@
       <workItem from="1702494801495" duration="161000" />
       <workItem from="1702494987138" duration="83000" />
       <workItem from="1702501601663" duration="126000" />
+      <workItem from="1702525589973" duration="7000" />
+      <workItem from="1702525617809" duration="9000" />
     </task>
     <servers />
   </component>
